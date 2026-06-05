@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(ADMIN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Booking {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  email           String
+  phone           String
+  checkIn         DateTime
+  checkOut        DateTime
+  guests          Int
+  adults          Int           @default(1)
+  children        Int           @default(0)
+  specialRequests String?
+  status          BookingStatus @default(PENDING)
+  totalNights     Int
+  adminNotes      String?
+  confirmedAt     DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+model BlockedDate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  date      DateTime @unique
+  reason    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blocked_dates")
+}
+
+model Inquiry {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    InquiryStatus @default(UNREAD)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("inquiries")
+}
+
+model VillaSettings {
+  id                 String @id @map("_id")
+  villaName          String @default("Villa Serenity")
+  tagline            String @default("Your Private Paradise")
+  description        String @default("")
+  maxGuests          Int    @default(10)
+  bedrooms           Int    @default(5)
+  bathrooms          Int    @default(5)
+  minNights          Int    @default(2)
+  checkInTime        String @default("15:00")
+  checkOutTime       String @default("11:00")
+  pricePerNight      Float  @default(0)
+  currency           String @default("USD")
+  address            String @default("")
+  contactEmail       String @default("")
+  contactPhone       String @default("")
+  whatsapp           String @default("")
+  instagramUrl       String @default("")
+  facebookUrl        String @default("")
+  googleMapsEmbedUrl String @default("")
+
+  @@map("villa_settings")
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+}
+
+enum InquiryStatus {
+  UNREAD
+  READ
+  REPLIED
+}

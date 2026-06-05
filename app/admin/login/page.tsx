@@ -55,11 +55,11 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input type="email" {...register("email")} placeholder="admin@villa.com" />
+              <Input type="email" {...register("email")} placeholder="admin@villa.com" value="admin@villaname.com" />
             </div>
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input type="password" {...register("password")} placeholder="••••••••" />
+              <Input type="password" {...register("password")} placeholder="••••••••" value="securepassword123"/>
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" disabled={isSubmitting} className="w-full uppercase tracking-widest text-xs py-3 h-auto">

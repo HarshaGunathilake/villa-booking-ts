@@ -37,7 +37,7 @@ export async function GET() {
     // Add manual blocks
     manualBlocked.forEach((b) => blockedDates.push(b.date.toISOString().split("T")[0]));
 
-    return NextResponse.json({ blockedDates: [...new Set(blockedDates)] });
+    return NextResponse.json({ blockedDates: Array.from(new Set(blockedDates)) });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch availability" }, { status: 500 });
   }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +18,6 @@ const schema = z.object({
 type LoginForm = z.infer<typeof schema>;
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(schema),
@@ -36,7 +34,9 @@ export default function AdminLoginPage() {
     if (result?.error) {
       setError("Invalid email or password.");
     } else {
-      router.push("/admin");
+      // Hard redirect so the browser sends the session cookie with the next request.
+      // router.push() is client-side and can race with the cookie being set on production.
+      window.location.href = "/admin";
     }
   };
 
@@ -55,11 +55,11 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input type="email" {...register("email")} placeholder="admin@villa.com" value="admin@villaname.com" />
+              <Input type="email" {...register("email")} placeholder="admin@villa.com" />
             </div>
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input type="password" {...register("password")} placeholder="••••••••" value="securepassword123"/>
+              <Input type="password" {...register("password")} placeholder="••••••••" />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" disabled={isSubmitting} className="w-full uppercase tracking-widest text-xs py-3 h-auto">

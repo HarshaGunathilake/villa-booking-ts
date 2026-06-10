@@ -7,8 +7,9 @@ import { Booking } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Eye } from "lucide-react";
+import { CheckCircle, XCircle, Eye, PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
+import AddBookingModal from "@/components/admin/AddBookingModal";
 
 interface Props {
   bookings: Booking[];
@@ -26,6 +27,7 @@ const statusColors: Record<string, any> = {
 export default function BookingsTable({ bookings, total, page }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const updateStatus = async (id: string, status: string) => {
     setLoading(id);
@@ -50,21 +52,31 @@ export default function BookingsTable({ bookings, total, page }: Props) {
 
   return (
     <div>
-      {/* Filter tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {["All", "PENDING", "CONFIRMED", "REJECTED", "CANCELLED"].map((s) => (
-          <Link
-            key={s}
-            href={s === "All" ? "/admin/bookings" : `/admin/bookings?status=${s}`}
-            className="text-xs uppercase tracking-widest px-4 py-2 border border-border hover:bg-gold hover:text-white hover:border-gold transition-colors"
-          >
-            {s}
-          </Link>
-        ))}
+      {/* Top bar: filters + add button */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex gap-2 flex-wrap">
+          {["All", "PENDING", "CONFIRMED", "REJECTED", "CANCELLED"].map((s) => (
+            <Link
+              key={s}
+              href={s === "All" ? "/admin/bookings" : `/admin/bookings?status=${s}`}
+              className="text-xs uppercase tracking-widest px-3 py-2 border border-border hover:bg-gold hover:text-white hover:border-gold transition-colors"
+            >
+              {s}
+            </Link>
+          ))}
+        </div>
+        <Button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 uppercase tracking-widest text-xs h-auto py-2.5"
+        >
+          <PlusCircle size={16} />
+          Add Booking
+        </Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+      {/* Table — scrollable on mobile */}
+      <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-gray-50 border-b border-border">
             <tr>
               <th className="text-left px-4 py-3 text-xs uppercase tracking-widest text-muted-foreground font-medium">Guest</th>
@@ -101,6 +113,7 @@ export default function BookingsTable({ bookings, total, page }: Props) {
                           className="text-green-600 hover:text-green-700 hover:bg-green-50 h-8 px-2"
                           onClick={() => updateStatus(b.id, "CONFIRMED")}
                           disabled={loading === b.id}
+                          title="Confirm"
                         >
                           <CheckCircle size={16} />
                         </Button>
@@ -110,13 +123,14 @@ export default function BookingsTable({ bookings, total, page }: Props) {
                           className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2"
                           onClick={() => updateStatus(b.id, "REJECTED")}
                           disabled={loading === b.id}
+                          title="Reject"
                         >
                           <XCircle size={16} />
                         </Button>
                       </>
                     )}
                     <Link href={`/admin/bookings/${b.id}`}>
-                      <Button size="sm" variant="ghost" className="h-8 px-2">
+                      <Button size="sm" variant="ghost" className="h-8 px-2" title="View details">
                         <Eye size={16} />
                       </Button>
                     </Link>
@@ -134,6 +148,8 @@ export default function BookingsTable({ bookings, total, page }: Props) {
       <div className="mt-4 text-sm text-muted-foreground">
         Showing {bookings.length} of {total} bookings
       </div>
+
+      <AddBookingModal open={showAddModal} onClose={() => setShowAddModal(false)} />
     </div>
   );
 }

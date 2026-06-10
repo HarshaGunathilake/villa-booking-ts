@@ -74,15 +74,23 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send emails (non-blocking)
-    try {
-      await Promise.all([
-        sendBookingConfirmationToGuest(booking as any),
-        sendBookingNotificationToAdmin(booking as any),
-      ]);
-    } catch (emailErr) {
-      console.error("Email error:", emailErr);
-    }
+    // Send emails (non-blocking — never fail the booking if email fails)
+    (async () => {
+      try {
+        const villaSettings = await prisma.villaSettings.findFirst({
+          select: { contactEmail: true },
+        });
+        const adminEmail = villaSettings?.contactEmail || "";
+        console.log(`[Email] Sending admin notification to: "${adminEmail}"`);
+        await Promise.all([
+          sendBookingConfirmationToGuest(booking as any),
+          sendBookingNotificationToAdmin(booking as any, adminEmail),
+        ]);
+        console.log("[Email] Notifications sent successfully");
+      } catch (emailErr) {
+        console.error("[Email] Error sending notification:", emailErr);
+      }
+    })();
 
     return NextResponse.json({ booking }, { status: 201 });
   } catch (error) {

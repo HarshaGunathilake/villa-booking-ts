@@ -2,10 +2,12 @@ import nodemailer from "nodemailer";
 import { Booking } from "@/types";
 import { format } from "date-fns";
 
+const smtpPort = Number(process.env.SMTP_PORT) || 587;
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
+  port: smtpPort,
+  secure: smtpPort === 465, // true for SSL (port 465), false for STARTTLS (port 587)
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -49,11 +51,22 @@ export async function sendBookingConfirmationToGuest(booking: Booking) {
   });
 }
 
-export async function sendBookingNotificationToAdmin(booking: Booking) {
+export async function sendBookingNotificationToAdmin(booking: Booking, toEmail: string) {
+  if (!toEmail) {
+    console.warn("No admin notification email set in Villa Settings — skipping admin email");
+    return;
+  }
+
   await transporter.sendMail({
     from: process.env.SMTP_FROM,
-    to: process.env.ADMIN_EMAIL_NOTIFY,
+    to: toEmail,
     subject: `New Booking Request – ${booking.firstName} ${booking.lastName}`,
+    priority: "high",
+    headers: {
+      "X-Priority": "1",
+      "X-MSMail-Priority": "High",
+      "Importance": "High",
+    },
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>New Booking Request</h2>

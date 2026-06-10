@@ -13,7 +13,7 @@ export default function PolicyPage({ title, villaName, content, emptyMessage }: 
       {/* Hero */}
       <section className="bg-villa-dark py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-gold font-sans mb-3">{villaName}</p>
+          <p className="text-xs uppercase tracking-[0.4em] mt-10 text-gold font-sans mb-3">{villaName}</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-white">{title}</h1>
         </div>
       </section>

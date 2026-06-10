@@ -128,6 +128,8 @@ model VillaSettings {
   instagramUrl       String @default("")
   facebookUrl        String @default("")
   googleMapsEmbedUrl String @default("")
+  privacyPolicy      String @default("")
+  termsAndConditions String @default("")
 
   @@map("villa_settings")
 }

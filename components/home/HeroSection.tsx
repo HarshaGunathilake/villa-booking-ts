@@ -10,7 +10,7 @@ export default function HeroSection() {
       {/* Background */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=2070"
+          src="https://images.unsplash.com/photo-1728721529009-bfaab6fcc8e6?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Villa Serenity"
           fill
           priority

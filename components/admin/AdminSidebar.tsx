@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/admin/calendar", icon: Calendar, label: "Calendar", exact: false },
   { href: "/admin/inquiries", icon: MessageSquare, label: "Inquiries", exact: false },
   { href: "/admin/gallery", icon: Image, label: "Gallery", exact: false },
+  { href: "/admin/pages", icon: FileText, label: "Pages", exact: false },
   { href: "/admin/settings", icon: Settings, label: "Settings", exact: false },
 ];
 
